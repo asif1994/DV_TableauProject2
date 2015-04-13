@@ -1,0 +1,102 @@
+# Project 6
+### Created by Asif Chowdhury, Justin Owens, Jash Choraria
+This is the sixth project for CS 329E Data Visualization. The data we will analyze comes from the Enigma.io website. The topic is a relationship between federal election campaign contributors and their income in Texas in 2008.
+The goals for this project are to create crosstabs using both R/SQL and Tableau methods.
+In order to reproduce this project, please follow the following instructions.
+
+## Step 1
+#### Load the correct packages into R
+Use the following code to load the correct packages into RStudio.
+
+```{r message = FALSE}
+source("../00 Doc/Packages.R", echo = TRUE)
+```
+## Step 2
+#### Clean up the CSV file
+
+Sometimes, the data in a CSV file is incompatible with Oracle. In this situation, we would want to clean up the data. Make sure the CSV file is in the appropriate place, as defined by the following code. Then run the code in order to get rid of special characters and set data types that are compatible with Oracle. You should now have a new CSV File with the reformatted data.
+
+```{r message = FALSE}
+source("../00 Doc/ReformattingData.R", echo = TRUE)
+```
+
+## Step 3
+#### Import and retrieve the data from the Oracle cloud server.
+
+After cleaning up the data, it should be fairly simple to import the table into the Oracle cloud. After doing so, use the following code to create a data frame in R using the newly imported SQL table. This will be useful mostly for when we start using Tableau to create crosstabs.
+
+The FED_CON_ZIPCODE data frame has the following 8 columns: ID, ZIPCODE, GENDER, Amount, AverageIncome, AverageWages, AverageTaxes, AverageIncomeTax
+
+```{r}
+source("../00 Doc/FED_CON_ZIPCODE.R", echo = TRUE)
+```
+
+## Step 4
+#### Use SQL and R to create crosstabs.
+
+Now that the data is uploaded into the cloud properly, we can use R to retrieve crosstabs using SQL commands. We have created four crosstabs using rank, max_value, nth_value and cume_dist functions.
+
+The first crosstab using rank can be created using the following code:
+
+```{r}
+source("../01 SQL Crosstabs/RankByAmount.R", echo = TRUE)
+```
+
+The second crosstab using max_value can be created using the following code:
+
+```{r}
+source("../01 SQL Crosstabs/MAX_AMOUNT.R", echo = TRUE)
+```
+
+The third crosstab using nth_value can be created using the following code:
+
+```{r}
+source("../01 SQL Crosstabs/N_VALUE_AMOUNT.R", echo = TRUE)
+```
+
+The fourth and final crosstab using cume_dist can be created using the following code:
+
+```{r}
+source("../01 SQL Crosstabs/AMOUNT_CUME.R", echo = TRUE)
+```
+
+## Step 5
+#### Import Data for Tableau Crosstabs
+
+Fortunately, we can also recreate the same crosstabs using Tableau.
+
+First, we need to either import the reformatted CSV file directly into Oracle (easiest), or pull the information from the cloud.
+
+In order to import the CSV file, follow these steps:
+
+1) Open Tableau.
+2) Click Connect to "Text File" underneath the Connect heading on the left side of the screen.
+![This is the link you need to click.]("../02 Tableau Workbook/ConnectText.PNG")
+3) On the screen that appears, locate the reformatted CSV file from Step 2. For this project, the file should be in the 00 Doc folder.
+4) On the following screen, click the tab at the bottom left of the screen that says "Sheet 1". This will take you to the main workbook.
+![This is the tab you need to click.]("../02 Tableau Workbook/Sheet1.PNG")
+
+Alternatively, you can retrieve the table from the cloud:
+
+1) Open Tableau.
+2) Click Connect to "Oracle" underneath the Connect heading on the left side of the screen.
+![This is the link you need to click.]("../02 Tableau Workbook/ConnectOracle.PNG")
+3) In the screen that appears, enter the required information. For our project, the information is:
+
+Server: 129.152.144.84
+
+Service: ORCL.usuniversi01134.oraclecloud.internal
+
+Port: 1521
+
+Username: C##cs329e_ac52722
+
+Password: orcl_ac52722
+
+4) On the following screen, click the tab at the bottom left of the screen that says "Sheet 1". This will take you to the main workbook.
+![This is the tab you need to click.]("../02 Tableau Workbook/Sheet1.PNG")
+
+## Step 6
+#### Re-create the Crosstabs from Step 4
+
+The first crosstab using rank can be created:

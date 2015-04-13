@@ -8,3 +8,4 @@ OVER (PARTITION BY GENDER) MAX_AMOUNT
 FROM Fed_Con_Zipcode)
 order by 1,2,3,4 asc"
 ')),httpheader=c(DB='jdbc:oracle:thin:@129.152.144.84:1521:ORCL', USER='C##cs329e_ac52722', PASS='orcl_ac52722', MODE='native_mode', MODEL='model', returnDimensions = 'False', returnFor = 'JSON'), verbose = TRUE)))
+tbl_df(MAX_AMOUNT_DIFF)
