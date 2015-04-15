@@ -32,8 +32,57 @@ Sometimes, the data in a CSV file is incompatible with Oracle. In this situation
 Make sure the CSV file is in the appropriate place, as defined by the following code, and modify the working directory in line 1 for your machine. Then run the code in order to get rid of special characters and set data types that are compatible with Oracle. 
 You should now have a new CSV File with the reformatted data. 
 
-Due to the complexity in calling directories, we will not display the code. This HTML is not dependent on the modified CSV, but if you would like to reproduce our modified CSV, follow the code found in the ReformattingData.R file in the 00 Doc folder.
+Due to the complexity in calling directories, we will display the code here, but not run it. This HTML is not dependent on the modified CSV, but if you would like to reproduce our modified CSV, follow the code found in the ReformattingData.R file in the 00 Doc folder or it's representation here.
 
+```{r, eval = FALSE}
+setwd(**PLACE WORKING DIRECTORY PATH FOR 00 DOC FOLDER HERE**)
+
+getfile_path <- "Fed_Con_Zipcode.csv"
+measures <- c("ID", "ZIPCODE", "Amount", "AverageIncome", "AverageWages", "AverageTaxes", "AverageIncomeTax")
+
+df <- read.csv(file_path, stringsAsFactors = FALSE)
+
+names(df) <- gsub("\\.+", "_", names(df))
+
+# Get rid of special characters in each column.
+for(n in names(df)) {
+  df[n] <- data.frame(lapply(df[n], gsub, pattern="[^ -~]",replacement= ""))
+}
+
+dimensions <- setdiff(names(df), measures)
+for(d in dimensions) {
+  # Get rid of " and ' in dimensions.
+  df[d] <- data.frame(lapply(df[d], gsub, pattern="[\"']",replacement= ""))
+  # Change & to and in dimensions.
+  df[d] <- data.frame(lapply(df[d], gsub, pattern="&",replacement= " and "))
+  # Change : to ; in dimensions.
+  df[d] <- data.frame(lapply(df[d], gsub, pattern=":",replacement= ";"))
+}
+
+library(lubridate)
+
+# The following is an example of dealing with special cases like making state abbreviations be all upper case.
+# df["State"] <- data.frame(lapply(df["State"], toupper))
+
+# Get rid of all characters in measures except for numbers, the - sign, and period.
+for(m in measures) {
+  df[m] <- data.frame(lapply(df[m], gsub, pattern="[^--.,0-9]",replacement= ""))
+}
+
+write.csv(df, paste(gsub(".csv", "", file_path), ".reformatted.csv", sep=""), row.names=FALSE)
+
+tableName <- gsub(" +", "_", gsub("[^A-z, 0-9, ]", "", gsub(".csv", "", file_path)))
+sql <- paste("CREATE TABLE", tableName, "(\n-- Change table_name to the table name you want.\n")
+for(d in dimensions) {
+  sql <- paste(sql, paste(d, "varchar2(4000),\n"))
+}
+for(m in measures) {
+  if(m != tail(measures, n=1)) sql <- paste(sql, paste(m, "number(38,4),\n"))
+  else sql <- paste(sql, paste(m, "number(38,4)\n"))
+}
+sql <- paste(sql, ");")
+cat(sql)
+```
 
 ## Step 3
 
@@ -166,7 +215,7 @@ The column furthest right shows the Max contribution within each gender category
 
 ![Max_Value Crosstab.](../02 Tableau Workbook/CrosstabNthValue.PNG)
 
-In this crosstab, we are able to get the Nth Ranked Value of contributions within each gender category for each zipcode. This is essentially an extension of the Rank crosstab. Instead of displaying the individual ranks, however, the calculated field will display the value of the Nth Ranked contribution within each grouping. For example, our crosstab finds the 2nd highest value and displays it.
+In this crosstab, we are able to get the Nth Ranked Value of contributions within each gender category for each zipcode. This is essentially an extension of the Rank crosstab. Instead of displaying the individual ranks, however, the calculated field will display the value of the Nth Ranked contribution within each grouping. For example, our crosstab finds the 3rd highest value and displays it.
 
 We need to create the calculated field for the Nth Ranking.
 
@@ -175,6 +224,8 @@ Right click on Amount in the Measures on the left side of the screen under the m
 Enter this formula into the "Formula" field: LOOKUP(ZN(AVG([Amount])), first() + 1)
 
 Click OK, and the new calculated field will be under the list of measures on the left side of the screen. Drag this measure to the Text Mark. Right click on this newly created mark and change it to compute using "Amount".
+
+When you create this type of calculated field, a Parameter is also created. Right click on the bottom left of the Tableau screen where it says "Nth" under Parameters and then click "Add to Sheet". This will create a slider that will let the user find whichever value they would like.
 
 The column furthest right shows the value of the Nth Ranked amount. This could be useful when you want to compare each amount to the Nth Ranked contribution amount within each grouping.
 
