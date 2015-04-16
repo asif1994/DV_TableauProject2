@@ -24,9 +24,6 @@ for(d in dimensions) {
 
 library(lubridate)
 
-# The following is an example of dealing with special cases like making state abbreviations be all upper case.
-# df["State"] <- data.frame(lapply(df["State"], toupper))
-
 # Get rid of all characters in measures except for numbers, the - sign, and period.
 for(m in measures) {
   df[m] <- data.frame(lapply(df[m], gsub, pattern="[^--.,0-9]",replacement= ""))
