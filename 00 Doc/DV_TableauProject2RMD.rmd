@@ -138,7 +138,7 @@ In order to import the CSV file, follow these steps:
 
 1) Open Tableau.
 
-2) Click Connect to "Text File" underneath the Connect heading on the left side of the screen.
+2) Click "Connect Data" on the top left corner and then Connect to "Text File" underneath the Connect heading on the left side of the screen.
 
 ![This is the link you need to click.](../02 Tableau Workbook/ConnectText.PNG)
 
@@ -152,7 +152,7 @@ Alternatively, you can retrieve the table from the cloud:
 
 1) Open Tableau.
 
-2) Click Connect to "Oracle" underneath the Connect heading on the left side of the screen.
+2) Click "Connect Data" on the top left corner and then Connect to "Oracle" underneath the Connect heading on the left side of the screen.
 
 ![This is the link you need to click.](../02 Tableau Workbook/ConnectOracle.PNG)
 
@@ -192,7 +192,7 @@ Make sure Zipcode, Gender and Amount are all changed to Discrete Continuous vari
 
 You will have to create a table calculation for rank by dragging the "Amount" measure to the TEXT mark. Right click on the mark in the worksheet and click "Rank" under "Quick Table Calculation." Also change the "Compute Using..." to "Amount" by right clicking on the mark and selecting the appropriate options.
 
-The column furthest right shows the individual ranking (highest to lowest) for each contribution amount within each gender category for each zip code.
+The column furthest right shows the individual ranking (highest to lowest) for each contribution amount within each gender category for each zipcode.
 
 **Max_Value Crosstab:**
 
@@ -213,19 +213,21 @@ The column furthest right shows the Max contribution within each gender category
 
 **Nth_Value Crosstab:**
 
-![Max_Value Crosstab.](../02 Tableau Workbook/CrosstabNthValue.PNG)
+![Nth_Value Crosstab.](../02 Tableau Workbook/CrosstabNthValue.PNG)
 
 In this crosstab, we are able to get the Nth Ranked Value of contributions within each gender category for each zipcode. This is essentially an extension of the Rank crosstab. Instead of displaying the individual ranks, however, the calculated field will display the value of the Nth Ranked contribution within each grouping. For example, our crosstab finds the 3rd highest value and displays it.
 
-We need to create the calculated field for the Nth Ranking.
+We need to create the calculated field for the Nth Ranking. But before that, we also need to create a parameter. 
 
-Right click on Amount in the Measures on the left side of the screen under the measures and choose the option to create a Calculated Field. You can change the name of the measure to "Nth Max Amount" or "Second Max Amount" as in our example.
+Right click on Amount in the Measures on the left side of the screen under the measures and choose the option to create a Parameter. You can change the name of the parameter to "Nth" as in our example. Change the data type of the parameter to Integer. Now give the parameter a customed range. For example, our Nth Parameter shows those values that has rank between 1 to 30.
 
-Enter this formula into the "Formula" field: LOOKUP(ZN(AVG([Amount])), first() + 1)
+Now, to create a Table Calculation, Right click on Amount in the Measures on the left side of the screen under the measures. Then choose the option to create a Calculated Field. You can change the name of the measure to "Nth Max Amount" or "Second Max Amount" as in our example.
+
+Enter this formula into the "Formula" field: LOOKUP(AVG([Amount]), FIRST() + [Nth] - 1)
 
 Click OK, and the new calculated field will be under the list of measures on the left side of the screen. Drag this measure to the Text Mark. Right click on this newly created mark and change it to compute using "Amount".
 
-When you create this type of calculated field, a Parameter is also created. Right click on the bottom left of the Tableau screen where it says "Nth" under Parameters and then click "Add to Sheet". This will create a slider that will let the user find whichever value they would like.
+Now right click on the bottom left of the Tableau screen where it says "Nth" under Parameters and then click "Add to Sheet". This will create a slider that will let the user find whichever value they would like.
 
 The column furthest right shows the value of the Nth Ranked amount. This could be useful when you want to compare each amount to the Nth Ranked contribution amount within each grouping.
 
